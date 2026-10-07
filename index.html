@@ -1,0 +1,2942 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Интерактивный курс: Облачные хранилища и цифровая гигиена</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    background: #f0f4f8;
+    color: #1e2b3c;
+    line-height: 1.55;
+    padding: 20px;
+  }
+
+  .app {
+    max-width: 1150px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 32px;
+    box-shadow: 0 20px 40px rgba(0, 20, 30, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: linear-gradient(135deg, #1a3b5d, #2b5f8a);
+    color: white;
+    padding: 28px 32px;
+  }
+
+  header h1 { font-size: 1.9rem; font-weight: 600; letter-spacing: -0.3px; }
+  header p { opacity: 0.85; margin-top: 6px; font-size: 1rem; }
+
+  .student-info {
+    display: flex;
+    gap: 16px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .student-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .student-field label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+  }
+
+  .student-field input {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: 0.2s;
+    outline: none;
+  }
+
+  .student-field input::placeholder { color: rgba(255, 255, 255, 0.45); }
+  .student-field input:focus {
+    border-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .tabs {
+    display: flex;
+    background: #e9eef4;
+    padding: 4px;
+    border-radius: 100px;
+    margin: 20px 32px 0 32px;
+    gap: 4px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: 0.2s;
+    color: #2b4b6e;
+  }
+
+  .tab-btn.active {
+    background: white;
+    color: #1a3b5d;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .content { padding: 24px 32px 32px; }
+
+  .panel { display: none; animation: fadeIn 0.25s ease; }
+  .panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: #f9fcff;
+    border: 1px solid #d7e2ed;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .card h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e3e5c;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 20px 0 10px;
+    color: #264e73;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 14px 0 8px;
+    color: #2b5f8a;
+  }
+
+  .theory-list { padding-left: 22px; margin: 10px 0; }
+  .theory-list li { margin-bottom: 8px; }
+
+  .highlight {
+    background: #e6f0fa;
+    border-left: 4px solid #2b5f8a;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 16px 0;
+    font-weight: 500;
+  }
+
+  .warning {
+    background: #fff4e5;
+    border-left: 4px solid #e69717;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 16px 0;
+  }
+
+  .btn {
+    background: #1e3e5c;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 60px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(26, 59, 93, 0.2);
+  }
+
+  .btn:hover { background: #0f2b41; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn.secondary {
+    background: white;
+    color: #1e3e5c;
+    border: 1.5px solid #b6cade;
+    box-shadow: none;
+  }
+  .btn.secondary:hover { background: #e9f0f8; }
+
+  .btn.danger { background: #c0392b; }
+  .btn.danger:hover { background: #a02b1f; }
+
+  .btn.success { background: #0d5a2b; }
+  .btn.success:hover { background: #094420; }
+
+  .btn.small { padding: 8px 16px; font-size: 0.88rem; }
+
+  .quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: white;
+    border: 1.5px solid #d7e2ed;
+    border-radius: 60px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.15s;
+  }
+  .quiz-option:hover { background: #f0f7ff; border-color: #7fa1c2; }
+  .quiz-option.selected { background: #d9e9ff; border-color: #1e3e5c; font-weight: 500; }
+  .quiz-option input[type="radio"] { accent-color: #1e3e5c; width: 18px; height: 18px; margin: 0; }
+  .quiz-option.correct-answer { background: #d9f0e0; border-color: #0d5a2b; }
+  .quiz-option.wrong-answer { background: #ffe6e6; border-color: #c0392b; }
+  .quiz-option.locked { cursor: not-allowed; opacity: 0.85; }
+  .quiz-option.locked:hover { transform: none; }
+
+  .feedback {
+    margin-top: 14px;
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-weight: 500;
+  }
+  .feedback.correct { background: #d9f0e0; color: #0d5a2b; border: 1px solid #a3d0b3; }
+  .feedback.incorrect { background: #ffe6e6; color: #a13030; border: 1px solid #f5baba; }
+  .feedback.info { background: #e6f0fa; color: #1e3e5c; border: 1px solid #b6cade; }
+
+  .task-item {
+    background: white;
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    border: 1px solid #d7e2ed;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .task-item label {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .task-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: #1e3e5c;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .status-badge {
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 60px;
+    background: #e9eef4;
+    color: #2b4b6e;
+    white-space: nowrap;
+  }
+  .status-badge.done { background: #d9f0e0; color: #0d5a2b; }
+
+  .progress-bar {
+    height: 10px;
+    background: #d7e2ed;
+    border-radius: 20px;
+    margin: 16px 0 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #2b5f8a, #4a8ab8);
+    border-radius: 20px;
+    transition: width 0.3s ease;
+  }
+
+  footer {
+    padding: 18px 32px 28px;
+    border-top: 1px solid #d7e2ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .footer-info { font-size: 0.9rem; color: #4f6d8a; }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 999;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: white;
+    border-radius: 32px;
+    max-width: 720px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 32px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+  }
+  .modal h2 { margin-bottom: 18px; color: #1a3b5d; }
+
+  .report-content {
+    white-space: pre-wrap;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    background: #f4f8fe;
+    padding: 20px;
+    border-radius: 20px;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    border: 1px solid #d7e2ed;
+    margin: 16px 0;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .small-note { font-size: 0.85rem; color: #5f7d9c; margin-top: 8px; }
+  .icon { font-size: 1.2rem; line-height: 1; }
+
+  /* ВИРТУАЛЬНОЕ ОБЛАКО */
+  .cloud-workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  .cloud-zone {
+    background: white;
+    border: 2px dashed #b6cade;
+    border-radius: 20px;
+    padding: 16px;
+    min-height: 260px;
+    transition: 0.2s;
+  }
+
+  .cloud-zone.dragover {
+    border-color: #2b5f8a;
+    background: #e6f0fa;
+    transform: scale(1.01);
+  }
+
+  .cloud-zone h4 {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .file-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .file-item {
+    background: #f0f7ff;
+    border: 1px solid #b6cade;
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: grab;
+    transition: 0.15s;
+    font-size: 0.9rem;
+  }
+
+  .file-item:hover {
+    background: #d9e9ff;
+    border-color: #2b5f8a;
+    transform: translateX(2px);
+  }
+
+  .file-item.dragging { opacity: 0.4; cursor: grabbing; }
+  .file-item.uploaded { background: #d9f0e0; border-color: #0d5a2b; cursor: default; }
+  .file-item.uploaded:hover { transform: none; }
+
+  .file-icon { font-size: 1.1rem; }
+
+  .cloud-badge {
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    border-radius: 60px;
+    background: #0d5a2b;
+    color: white;
+    margin-left: auto;
+    font-weight: 600;
+  }
+
+  .trash-zone {
+    background: #ffe6e6;
+    border: 2px dashed #e08b8b;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    color: #a13030;
+    font-weight: 500;
+    transition: 0.2s;
+    margin-top: 12px;
+    cursor: pointer;
+    font-size: 0.88rem;
+  }
+
+  .trash-zone.dragover {
+    background: #ffcccc;
+    border-color: #c0392b;
+    transform: scale(1.02);
+  }
+
+  /* ГЕНЕРАТОР ПАРОЛЕЙ */
+  .password-tool {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #d7e2ed;
+    margin: 16px 0;
+  }
+
+  .password-display {
+    display: flex;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .password-output {
+    flex: 1;
+    padding: 14px 18px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 1.1rem;
+    background: #f4f8fe;
+    border: 1.5px solid #b6cade;
+    border-radius: 12px;
+    word-break: break-all;
+    color: #1e3e5c;
+    font-weight: 600;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+  }
+
+  .strength-meter {
+    height: 8px;
+    background: #e9eef4;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  .strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: 0.3s;
+    border-radius: 20px;
+  }
+
+  .password-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .slider-group input[type="range"] {
+    accent-color: #1e3e5c;
+    width: 140px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 12px;
+  }
+
+  .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    accent-color: #1e3e5c;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* СИМУЛЯТОР ФИШИНГА */
+  .inbox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0;
+  }
+
+  .email-item {
+    background: white;
+    border: 1.5px solid #d7e2ed;
+    border-radius: 14px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .email-item:hover { border-color: #2b5f8a; background: #f0f7ff; }
+  .email-item.opened { background: #f4f8fe; border-color: #7fa1c2; }
+  .email-item.legit-answer { border-left: 4px solid #0d5a2b; }
+  .email-item.phish-answer { border-left: 4px solid #c0392b; }
+  .email-item.locked { cursor: default; }
+
+  .email-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #d9e9ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .email-preview { flex: 1; min-width: 0; }
+  .email-from { font-weight: 600; font-size: 0.9rem; color: #1e3e5c; }
+  .email-subject { font-size: 0.85rem; color: #4f6d8a; margin-top: 2px; }
+  .email-status { font-size: 1.3rem; flex-shrink: 0; }
+
+  .email-detail {
+    background: #f9fcff;
+    border: 1px solid #d7e2ed;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+
+  .email-detail .link-danger {
+    color: #c0392b;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .email-detail .link-safe {
+    color: #0d5a2b;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* DRAG-AND-DROP СОРТИРОВКА */
+  .sorting-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+
+  .sort-zone {
+    background: white;
+    border: 2px dashed #b6cade;
+    border-radius: 20px;
+    padding: 16px;
+    min-height: 200px;
+  }
+
+  .sort-zone.safe { border-color: #0d5a2b; background: #f0faf3; }
+  .sort-zone.danger { border-color: #c0392b; background: #fff5f5; }
+  .sort-zone.dragover { transform: scale(1.02); }
+  .sort-zone.locked { opacity: 0.9; }
+
+  .sort-zone h4 {
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .sort-zone.safe h4 { color: #0d5a2b; }
+  .sort-zone.danger h4 { color: #c0392b; }
+
+  .sort-item {
+    background: white;
+    border: 1.5px solid #d7e2ed;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: grab;
+    font-size: 0.88rem;
+    transition: 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sort-item:hover { border-color: #2b5f8a; }
+  .sort-item.dragging { opacity: 0.4; }
+  .sort-item.correct { background: #d9f0e0; border-color: #0d5a2b; }
+  .sort-item.wrong { background: #ffe6e6; border-color: #c0392b; }
+  .sort-item.locked { cursor: default; }
+  .sort-item.locked:hover { transform: none; }
+
+  /* ИНТЕРАКТИВНЫЙ ВЫБОР ПАРОЛЕЙ */
+  .passwords-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .password-check {
+    background: white;
+    border: 1.5px solid #d7e2ed;
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    transition: 0.15s;
+    font-family: 'SF Mono', 'Consolas', monospace;
+    font-size: 0.92rem;
+  }
+
+  .password-check:hover { border-color: #2b5f8a; background: #f0f7ff; }
+  .password-check.selected { background: #d9e9ff; border-color: #1e3e5c; }
+  .password-check.good { background: #d9f0e0; border-color: #0d5a2b; }
+  .password-check.bad { background: #ffe6e6; border-color: #c0392b; }
+  .password-check.locked { cursor: default; }
+  .password-check.locked:hover { background: inherit; }
+
+  /* КАЛЬКУЛЯТОР ПРАВ ДОСТУПА */
+  .access-tool {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #d7e2ed;
+    margin: 16px 0;
+  }
+  .access-tool.locked { opacity: 0.9; }
+  .access-tool.locked input[type="checkbox"] { cursor: not-allowed; }
+
+  .access-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9eef4;
+    flex-wrap: wrap;
+  }
+
+  .access-row:last-child { border-bottom: none; }
+  .access-row .role { font-weight: 600; min-width: 120px; color: #1e3e5c; }
+  .access-row .perms { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .perms label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.88rem;
+  }
+
+  .perms input[type="checkbox"] { accent-color: #1e3e5c; }
+
+  .hidden { display: none !important; }
+
+  .lock-notice {
+    background: #fff4e5;
+    border-left: 4px solid #e69717;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #8a5a00;
+    margin-top: 12px;
+    display: none;
+  }
+  .lock-notice.show { display: block; }
+
+  /* ФОТО В ПРАКТИЧЕСКИХ ЗАДАНИЯХ */
+  .task-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .task-item > label {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .task-photos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .task-photos:empty {
+    display: none;
+  }
+
+  .photo-thumb {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid #b6cade;
+    background: #f4f8fe;
+    cursor: pointer;
+    transition: 0.15s;
+    flex-shrink: 0;
+  }
+
+  .photo-thumb:hover {
+    border-color: #2b5f8a;
+    transform: scale(1.05);
+  }
+
+  .photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-thumb .remove-photo {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(192, 57, 43, 0.9);
+    color: white;
+    border: none;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    opacity: 0;
+    transition: 0.15s;
+  }
+
+  .photo-thumb:hover .remove-photo {
+    opacity: 1;
+  }
+
+  .photo-btn {
+    padding: 6px 12px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .photo-btn.has-photos {
+    background: #d9f0e0;
+    border-color: #0d5a2b;
+    color: #0d5a2b;
+  }
+
+  /* Модалка просмотра фото */
+  .photo-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    cursor: zoom-out;
+  }
+  .photo-modal-overlay.active { display: flex; }
+  .photo-modal-overlay img {
+    max-width: 96vw;
+    max-height: 96vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+
+  @media (max-width: 700px) {
+    .content { padding: 16px; }
+    .tabs { margin: 12px 16px 0; }
+    header { padding: 20px; }
+    .task-item { flex-direction: column; align-items: flex-start; }
+    .status-badge { align-self: flex-end; }
+    footer { flex-direction: column; align-items: flex-start; }
+    .cloud-workspace, .sorting-container { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <h1>📚 Цифровая грамотность</h1>
+    <p>Интерактивный курс: облачные хранилища и защита данных</p>
+
+    <div class="student-info">
+      <div class="student-field">
+        <label for="studentName">ФИО студента</label>
+        <input type="text" id="studentName" placeholder="Иванов Иван Иванович" autocomplete="name">
+      </div>
+      <div class="student-field">
+        <label for="studentGroup">Группа</label>
+        <input type="text" id="studentGroup" placeholder="ИС-21" autocomplete="off">
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="cloud">☁️ Облачные хранилища</button>
+    <button class="tab-btn" data-tab="security">🔒 Защита данных</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ПАНЕЛЬ 1: ОБЛАКА -->
+    <div id="cloud" class="panel active">
+
+      <div class="card">
+        <h2><span class="icon">☁️</span> Облачные хранилища: теория</h2>
+        <p>Облачное хранилище — это сервис для хранения файлов на удалённых серверах с доступом через интернет.</p>
+
+        <h3>🔹 Ключевые понятия</h3>
+        <ul class="theory-list">
+          <li><strong>Синхронизация</strong> — автоматическое обновление файлов на всех устройствах.</li>
+          <li><strong>Совместный доступ</strong> — возможность делиться файлами с другими людьми.</li>
+          <li><strong>Версионность</strong> — история изменений и откат к предыдущей версии.</li>
+          <li><strong>Квота</strong> — лимит бесплатного или платного пространства.</li>
+          <li><strong>Корзина</strong> — временное хранилище удалённых файлов.</li>
+        </ul>
+
+        <div class="highlight">
+          💡 Популярные сервисы: Google Drive, Яндекс.Диск, Dropbox, OneDrive, MEGA.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">🖱️</span> Интерактив: виртуальное облако</h2>
+        <p>Перетащите файлы с компьютера в облако, чтобы загрузить их. Перетащите загруженный файл в корзину, чтобы удалить. Нажмите на загруженный файл, чтобы увидеть детали.</p>
+
+        <div class="cloud-workspace">
+          <div class="cloud-zone" id="localZone">
+            <h4><span class="icon">💻</span> Локальный компьютер</h4>
+            <ul class="file-list" id="localFiles">
+              <li class="file-item" draggable="true" data-name="Договор.pdf" data-size="2.4 МБ" data-type="PDF">
+                <span class="file-icon">📄</span> Договор.pdf <span style="color:#5f7d9c;font-size:0.78rem;">2.4 МБ</span>
+              </li>
+              <li class="file-item" draggable="true" data-name="Фото_отпуск.jpg" data-size="4.1 МБ" data-type="Изображение">
+                <span class="file-icon">🖼️</span> Фото_отпуск.jpg <span style="color:#5f7d9c;font-size:0.78rem;">4.1 МБ</span>
+              </li>
+              <li class="file-item" draggable="true" data-name="Презентация.pptx" data-size="8.7 МБ" data-type="Презентация">
+                <span class="file-icon">📊</span> Презентация.pptx <span style="color:#5f7d9c;font-size:0.78rem;">8.7 МБ</span>
+              </li>
+              <li class="file-item" draggable="true" data-name="Резюме.docx" data-size="340 КБ" data-type="Документ">
+                <span class="file-icon">📝</span> Резюме.docx <span style="color:#5f7d9c;font-size:0.78rem;">340 КБ</span>
+              </li>
+              <li class="file-item" draggable="true" data-name="Видео_урок.mp4" data-size="45 МБ" data-type="Видео">
+                <span class="file-icon">🎬</span> Видео_урок.mp4 <span style="color:#5f7d9c;font-size:0.78rem;">45 МБ</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="cloud-zone" id="cloudZone">
+            <h4><span class="icon">☁️</span> Облако (удалённые серверы)</h4>
+            <ul class="file-list" id="cloudFiles"></ul>
+            <div class="trash-zone" id="trashZone">
+              🗑️ Перетащите сюда, чтобы удалить
+            </div>
+          </div>
+        </div>
+
+        <div class="feedback info" id="cloudInteractFeedback">
+          ℹ️ Перетащите файл из левой колонки в правую, чтобы загрузить его в облако.
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
+          <button class="btn secondary small" id="cloudResetBtn">🔄 Сбросить облако</button>
+          <button class="btn secondary small" id="cloudDetailsBtn">📋 Показать детали загруженных</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">👥</span> Интерактив: права совместного доступа</h2>
+        <p>Настройте, какие права, по вашему мнению, должны быть у разных ролей при совместной работе с документом «Отчёт_проект.docx». После проверки задание блокируется.</p>
+
+        <div class="access-tool" id="accessTool">
+          <div class="access-row">
+            <span class="role">👤 Владелец</span>
+            <div class="perms">
+              <label><input type="checkbox" data-role="owner" data-perm="view" checked disabled> Просмотр</label>
+              <label><input type="checkbox" data-role="owner" data-perm="edit" checked disabled> Редактирование</label>
+              <label><input type="checkbox" data-role="owner" data-perm="share" checked disabled> Поделиться</label>
+            </div>
+          </div>
+          <div class="access-row">
+            <span class="role">✏️ Редактор</span>
+            <div class="perms">
+              <label><input type="checkbox" data-role="editor" data-perm="view"> Просмотр</label>
+              <label><input type="checkbox" data-role="editor" data-perm="edit"> Редактирование</label>
+              <label><input type="checkbox" data-role="editor" data-perm="share"> Поделиться</label>
+            </div>
+          </div>
+          <div class="access-row">
+            <span class="role">💬 Комментатор</span>
+            <div class="perms">
+              <label><input type="checkbox" data-role="commenter" data-perm="view"> Просмотр</label>
+              <label><input type="checkbox" data-role="commenter" data-perm="edit"> Редактирование</label>
+              <label><input type="checkbox" data-role="commenter" data-perm="share"> Поделиться</label>
+            </div>
+          </div>
+          <div class="access-row">
+            <span class="role">👁️ Читатель</span>
+            <div class="perms">
+              <label><input type="checkbox" data-role="viewer" data-perm="view"> Просмотр</label>
+              <label><input type="checkbox" data-role="viewer" data-perm="edit"> Редактирование</label>
+              <label><input type="checkbox" data-role="viewer" data-perm="share"> Поделиться</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px;">
+          <button class="btn" id="checkAccessBtn">✅ Проверить настройки</button>
+          <button class="btn secondary small" id="accessResetBtn">🔄 Сбросить</button>
+        </div>
+        <div id="accessFeedback" class="feedback" style="display: none;"></div>
+        <div class="lock-notice" id="accessLockNotice">🔒 Задание проверено и заблокировано для изменения.</div>
+      </div>
+
+      <div class="card">
+        <h2>📝 Тест: Облачные хранилища</h2>
+        <div id="cloud-quiz">
+          <p><strong>1. Что такое синхронизация?</strong></p>
+          <label class="quiz-option" data-name="q1">
+            <input type="radio" name="q1" value="a"> Ручное копирование файлов
+          </label>
+          <label class="quiz-option" data-name="q1">
+            <input type="radio" name="q1" value="b"> Автообновление файлов на всех устройствах
+          </label>
+          <label class="quiz-option" data-name="q1">
+            <input type="radio" name="q1" value="c"> Удаление старых версий
+          </label>
+
+          <p style="margin-top: 18px;"><strong>2. Какое право доступа НЕ нужно давать читателю?</strong></p>
+          <label class="quiz-option" data-name="q2">
+            <input type="radio" name="q2" value="a"> Просмотр
+          </label>
+          <label class="quiz-option" data-name="q2">
+            <input type="radio" name="q2" value="b"> Комментирование
+          </label>
+          <label class="quiz-option" data-name="q2">
+            <input type="radio" name="q2" value="c"> Редактирование
+          </label>
+
+          <button class="btn secondary" id="checkCloudQuiz" style="margin-top: 16px;">Проверить тест</button>
+          <div id="cloudQuizFeedback" class="feedback" style="display: none;"></div>
+          <div class="lock-notice" id="cloudQuizLockNotice">🔒 Тест проверен и заблокирован для изменения.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧪 Практические задания: Облачные хранилища</h2>
+        <p>Отметьте задания, которые вы выполнили, и при необходимости прикрепите фото-подтверждения (📎). После фиксации задание блокируется.</p>
+        <div id="cloudTasks">
+          <div class="task-item" data-task-id="c1">
+            <label><input type="checkbox" class="cloud-task" data-id="c1"> Зарегистрироваться в облачном сервисе</label>
+            <div class="task-photos" data-photo-id="c1"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c1">
+            <button class="btn secondary small photo-btn" data-target="photo_c1" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c2">
+            <label><input type="checkbox" class="cloud-task" data-id="c2"> Загрузить первый файл в облако</label>
+            <div class="task-photos" data-photo-id="c2"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c2">
+            <button class="btn secondary small photo-btn" data-target="photo_c2" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c3">
+            <label><input type="checkbox" class="cloud-task" data-id="c3"> Настроить синхронизацию папки</label>
+            <div class="task-photos" data-photo-id="c3"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c3">
+            <button class="btn secondary small photo-btn" data-target="photo_c3" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c4">
+            <label><input type="checkbox" class="cloud-task" data-id="c4"> Предоставить доступ другому пользователю</label>
+            <div class="task-photos" data-photo-id="c4"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c4">
+            <button class="btn secondary small photo-btn" data-target="photo_c4" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c5">
+            <label><input type="checkbox" class="cloud-task" data-id="c5"> Восстановить удалённый файл из корзины</label>
+            <div class="task-photos" data-photo-id="c5"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c5">
+            <button class="btn secondary small photo-btn" data-target="photo_c5" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c6">
+            <label><input type="checkbox" class="cloud-task" data-id="c6"> Создать общую папку для совместной работы</label>
+            <div class="task-photos" data-photo-id="c6"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c6">
+            <button class="btn secondary small photo-btn" data-target="photo_c6" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c7">
+            <label><input type="checkbox" class="cloud-task" data-id="c7"> Проверить историю версий документа</label>
+            <div class="task-photos" data-photo-id="c7"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c7">
+            <button class="btn secondary small photo-btn" data-target="photo_c7" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="c8">
+            <label><input type="checkbox" class="cloud-task" data-id="c8"> Настроить выборочную синхронизацию</label>
+            <div class="task-photos" data-photo-id="c8"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_c8">
+            <button class="btn secondary small photo-btn" data-target="photo_c8" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="cloudProgress"></div></div>
+        <p class="small-note" id="cloudProgressText">Отмечено 0 из 8 заданий</p>
+        <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+          <button class="btn" id="submitCloudTasksBtn">✅ Зафиксировать выполнение</button>
+          <button class="btn secondary small" id="resetCloudTasksBtn">🔄 Сбросить</button>
+        </div>
+        <div class="lock-notice" id="cloudTasksLockNotice">🔒 Задание зафиксировано и заблокировано для изменения.</div>
+      </div>
+    </div>
+
+    <!-- ПАНЕЛЬ 2: ЗАЩИТА -->
+    <div id="security" class="panel">
+
+      <div class="card">
+        <h2><span class="icon">🔒</span> Базовая защита данных: теория</h2>
+        <p>Цифровая гигиена — это привычки, защищающие ваши данные, устройства и аккаунты от угроз.</p>
+
+        <h3>🔹 Основные принципы</h3>
+        <ul class="theory-list">
+          <li><strong>Надёжные пароли</strong> — длинные, уникальные, с разными символами.</li>
+          <li><strong>2FA</strong> — дополнительный уровень защиты входа.</li>
+          <li><strong>Обновления</strong> — закрывают уязвимости.</li>
+          <li><strong>Осторожность с ссылками</strong> — фишинг и вредоносные вложения.</li>
+          <li><strong>Резервные копии</strong> — правило 3-2-1.</li>
+        </ul>
+
+        <div class="warning">
+          ⚠️ Никогда не вводите пароли и коды по ссылкам из писем. Заходите на сайты вручную.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">📧</span> Интерактив: симулятор фишинга</h2>
+        <p>Перед вами входящие письма. Откройте каждое и определите: это фишинг или легитимное письмо? После ответа задание блокируется.</p>
+
+        <div class="inbox" id="inbox">
+          <div class="email-item" data-type="phish" data-id="e1">
+            <div class="email-avatar">🏦</div>
+            <div class="email-preview">
+              <div class="email-from">Сбербанк Онлайн &lt;security@sber-online.ru&gt;</div>
+              <div class="email-subject">Срочно! Ваш аккаунт будет заблокирован</div>
+            </div>
+            <div class="email-status">📩</div>
+          </div>
+          <div class="email-detail hidden" data-detail="e1">
+            <p><strong>Тема:</strong> Срочно! Ваш аккаунт будет заблокирован</p>
+            <p style="margin-top: 8px;">Уважаемый клиент! Обнаружена подозрительная активность. Для подтверждения личности перейдите по ссылке и введите данные карты:</p>
+            <p style="margin-top: 8px;"><span class="link-danger" data-action="danger">https://sber-online.ru.verify-account.xyz/login</span></p>
+            <p style="margin-top: 8px; font-size: 0.82rem; color: #5f7d9c;">Отправитель: security@sber-online.ru (домен поддельный)</p>
+            <div style="margin-top: 12px; display: flex; gap: 10px;">
+              <button class="btn success small" data-answer="legit" data-id="e1">✅ Это легитимно</button>
+              <button class="btn danger small" data-answer="phish" data-id="e1">🚨 Это фишинг</button>
+            </div>
+          </div>
+
+          <div class="email-item" data-type="legit" data-id="e2">
+            <div class="email-avatar">📚</div>
+            <div class="email-preview">
+              <div class="email-from">Университет &lt;info@university.edu&gt;</div>
+              <div class="email-subject">Расписание на следующую неделю</div>
+            </div>
+            <div class="email-status">📩</div>
+          </div>
+          <div class="email-detail hidden" data-detail="e2">
+            <p><strong>Тема:</strong> Расписание на следующую неделю</p>
+            <p style="margin-top: 8px;">Здравствуйте! Напоминаем, что следующая неделя — сессия. Расписание доступно в личном кабинете на официальном сайте.</p>
+            <p style="margin-top: 8px;">Ссылка: <span class="link-safe" data-action="safe">https://university.edu/schedule</span></p>
+            <p style="margin-top: 8px; font-size: 0.82rem; color: #5f7d9c;">Домен совпадает с официальным сайтом университета.</p>
+            <div style="margin-top: 12px; display: flex; gap: 10px;">
+              <button class="btn success small" data-answer="legit" data-id="e2">✅ Это легитимно</button>
+              <button class="btn danger small" data-answer="phish" data-id="e2">🚨 Это фишинг</button>
+            </div>
+          </div>
+
+          <div class="email-item" data-type="phish" data-id="e3">
+            <div class="email-avatar">🎁</div>
+            <div class="email-preview">
+              <div class="email-from">Розыгрыш &lt;winner@prize-gift.tk&gt;</div>
+              <div class="email-subject">Вы выиграли iPhone! Заберите приз</div>
+            </div>
+            <div class="email-status">📩</div>
+          </div>
+          <div class="email-detail hidden" data-detail="e3">
+            <p><strong>Тема:</strong> Вы выиграли iPhone! Заберите приз</p>
+            <p style="margin-top: 8px;">Поздравляем! Вы стали победителем розыгрыша. Для получения приза оплатите доставку 500 рублей и введите данные карты:</p>
+            <p style="margin-top: 8px;"><span class="link-danger" data-action="danger">https://prize-gift.tk/claim</span></p>
+            <p style="margin-top: 8px; font-size: 0.82rem; color: #5f7d9c;">Домен .tk — бесплатный, часто используется мошенниками.</p>
+            <div style="margin-top: 12px; display: flex; gap: 10px;">
+              <button class="btn success small" data-answer="legit" data-id="e3">✅ Это легитимно</button>
+              <button class="btn danger small" data-answer="phish" data-id="e3">🚨 Это фишинг</button>
+            </div>
+          </div>
+
+          <div class="email-item" data-type="legit" data-id="e4">
+            <div class="email-avatar">💼</div>
+            <div class="email-preview">
+              <div class="email-from">Коллега Иван &lt;ivan.petrov@company.ru&gt;</div>
+              <div class="email-subject">Отчёт за квартал — во вложении</div>
+            </div>
+            <div class="email-status">📩</div>
+          </div>
+          <div class="email-detail hidden" data-detail="e4">
+            <p><strong>Тема:</strong> Отчёт за квартал — во вложении</p>
+            <p style="margin-top: 8px;">Привет! Отправляю отчёт за квартал, как договаривались. Посмотри, пожалуйста, до завтра.</p>
+            <p style="margin-top: 8px; font-size: 0.82rem; color: #5f7d9c;">Домен компании совпадает с корпоративным.</p>
+            <div style="margin-top: 12px; display: flex; gap: 10px;">
+              <button class="btn success small" data-answer="legit" data-id="e4">✅ Это легитимно</button>
+              <button class="btn danger small" data-answer="phish" data-id="e4">🚨 Это фишинг</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="feedback info" id="phishingFeedback">
+          ℹ️ Откройте письмо, чтобы увидеть детали и дать ответ.
+        </div>
+        <p class="small-note">Правильных ответов: <span id="phishingScore">0</span> из 4</p>
+        <div class="lock-notice" id="phishingLockNotice">🔒 Все письма проверены и заблокированы для изменения.</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">🔑</span> Интерактив: генератор паролей</h2>
+        <p>Настройте параметры и сгенерируйте надёжный пароль. Посмотрите, как меняется индикатор надёжности.</p>
+
+        <div class="password-tool">
+          <div class="password-display">
+            <div class="password-output" id="passwordOutput">Нажмите «Сгенерировать»</div>
+            <button class="btn small" id="copyPasswordBtn" style="align-self: center;">📋</button>
+          </div>
+
+          <div class="strength-meter">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <p class="small-note" id="strengthText">Надёжность: —</p>
+
+          <div class="password-controls">
+            <div class="slider-group">
+              <label>Длина: <strong id="lengthValue">16</strong></label>
+              <input type="range" id="lengthSlider" min="6" max="32" value="16">
+            </div>
+          </div>
+
+          <div class="checkbox-group">
+            <label><input type="checkbox" id="useUpper" checked> Заглавные (A-Z)</label>
+            <label><input type="checkbox" id="useLower" checked> Строчные (a-z)</label>
+            <label><input type="checkbox" id="useDigits" checked> Цифры (0-9)</label>
+            <label><input type="checkbox" id="useSymbols" checked> Символы (!@#$)</label>
+            <label><input type="checkbox" id="excludeAmbiguous"> Исключить похожие (0,O,l,1)</label>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;">
+            <button class="btn" id="generatePasswordBtn">🎲 Сгенерировать</button>
+            <button class="btn secondary small" id="testPasswordBtn">🧪 Проверить свой пароль</button>
+          </div>
+
+          <div id="passwordTestArea" class="hidden" style="margin-top: 16px;">
+            <input type="text" id="userPasswordInput" placeholder="Введите пароль для проверки..."
+              style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid #b6cade; font-family: monospace; font-size: 1rem;">
+            <button class="btn small" id="checkUserPasswordBtn" style="margin-top: 10px;">Проверить</button>
+            <div id="userPasswordFeedback" class="feedback" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">🎯</span> Интерактив: сортировка привычек</h2>
+        <p>Перетащите каждую привычку в нужную колонку: «Безопасно» или «Опасно». После проверки задание блокируется.</p>
+
+        <div class="sorting-container">
+          <div class="sort-zone safe" id="safeZone" data-zone="safe">
+            <h4>✅ Безопасно</h4>
+          </div>
+          <div class="sort-zone danger" id="dangerZone" data-zone="danger">
+            <h4>⛔ Опасно</h4>
+          </div>
+        </div>
+
+        <div id="sortPool" style="background: white; border-radius: 20px; padding: 16px; border: 1px solid #d7e2ed;">
+          <h4 style="margin-bottom: 12px; color: #264e73;">📦 Перетащите в колонки:</h4>
+          <div id="sortItems">
+            <div class="sort-item" draggable="true" data-id="si1">🔐 Использовать менеджер паролей</div>
+            <div class="sort-item" draggable="true" data-id="si2">📧 Переходить по ссылкам из писем</div>
+            <div class="sort-item" draggable="true" data-id="si3">🔒 Включить двухфакторную аутентификацию</div>
+            <div class="sort-item" draggable="true" data-id="si4">🌐 Использовать открытый Wi-Fi для банка</div>
+            <div class="sort-item" draggable="true" data-id="si5">💾 Делать резервные копии</div>
+            <div class="sort-item" draggable="true" data-id="si6">🔑 Один пароль для всех сервисов</div>
+            <div class="sort-item" draggable="true" data-id="si7">🔄 Регулярно обновлять ПО</div>
+            <div class="sort-item" draggable="true" data-id="si8">📎 Открывать вложения от незнакомцев</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+          <button class="btn" id="checkSortBtn">✅ Проверить сортировку</button>
+          <button class="btn secondary small" id="resetSortBtn">🔄 Сбросить</button>
+        </div>
+        <div id="sortFeedback" class="feedback" style="display: none;"></div>
+        <div class="lock-notice" id="sortLockNotice">🔒 Задание проверено и заблокировано для изменения.</div>
+      </div>
+
+      <div class="card">
+        <h2><span class="icon">🕵️</span> Интерактив: найди хорошие пароли</h2>
+        <p>Нажмите на пароли, которые вы считаете надёжными. После проверки задание блокируется.</p>
+
+        <div class="passwords-grid" id="passwordsGrid">
+          <div class="password-check">Tr0ub4dor&amp;3</div>
+          <div class="password-check">password123</div>
+          <div class="password-check">X9$kL!2mQ#7vB</div>
+          <div class="password-check">qwerty</div>
+          <div class="password-check">12345678</div>
+          <div class="password-check">correct-horse-battery-staple</div>
+          <div class="password-check">iloveyou</div>
+          <div class="password-check">P@ssw0rd_2024!Long</div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+          <button class="btn" id="checkPasswordsBtn">✅ Проверить</button>
+          <button class="btn secondary small" id="resetPasswordsBtn">🔄 Сбросить</button>
+        </div>
+        <div id="passwordsFeedback" class="feedback" style="display: none;"></div>
+        <div class="lock-notice" id="passwordsLockNotice">🔒 Задание проверено и заблокировано для изменения.</div>
+      </div>
+
+      <div class="card">
+        <h2>📝 Тест: Базовая защита данных</h2>
+        <div id="security-quiz">
+          <p><strong>1. Что такое двухфакторная аутентификация?</strong></p>
+          <label class="quiz-option" data-name="q3">
+            <input type="radio" name="q3" value="a"> Два разных пароля
+          </label>
+          <label class="quiz-option" data-name="q3">
+            <input type="radio" name="q3" value="b"> Вход с двух устройств
+          </label>
+          <label class="quiz-option" data-name="q3">
+            <input type="radio" name="q3" value="c"> Подтверждение вторым способом
+          </label>
+
+          <p style="margin-top: 18px;"><strong>2. Что делать при подозрительном письме?</strong></p>
+          <label class="quiz-option" data-name="q4">
+            <input type="radio" name="q4" value="a"> Перейти по ссылке
+          </label>
+          <label class="quiz-option" data-name="q4">
+            <input type="radio" name="q4" value="b"> Удалить, не переходить
+          </label>
+          <label class="quiz-option" data-name="q4">
+            <input type="radio" name="q4" value="c"> Ответить отправителю
+          </label>
+
+          <button class="btn secondary" id="checkSecurityQuiz" style="margin-top: 16px;">Проверить тест</button>
+          <div id="securityQuizFeedback" class="feedback" style="display: none;"></div>
+          <div class="lock-notice" id="securityQuizLockNotice">🔒 Тест проверен и заблокирован для изменения.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧪 Практические задания: Цифровая гигиена</h2>
+        <p>Отметьте задания, которые вы выполнили, и при необходимости прикрепите фото-подтверждения (📎). После фиксации задание блокируется.</p>
+        <div id="securityTasks">
+          <div class="task-item" data-task-id="s1">
+            <label><input type="checkbox" class="security-task" data-id="s1"> Установить менеджер паролей</label>
+            <div class="task-photos" data-photo-id="s1"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s1">
+            <button class="btn secondary small photo-btn" data-target="photo_s1" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s2">
+            <label><input type="checkbox" class="security-task" data-id="s2"> Сгенерировать уникальные пароли для 3-5 сервисов</label>
+            <div class="task-photos" data-photo-id="s2"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s2">
+            <button class="btn secondary small photo-btn" data-target="photo_s2" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s3">
+            <label><input type="checkbox" class="security-task" data-id="s3"> Включить 2FA в почте и соцсетях</label>
+            <div class="task-photos" data-photo-id="s3"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s3">
+            <button class="btn secondary small photo-btn" data-target="photo_s3" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s4">
+            <label><input type="checkbox" class="security-task" data-id="s4"> Проверить обновления ОС и браузера</label>
+            <div class="task-photos" data-photo-id="s4"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s4">
+            <button class="btn secondary small photo-btn" data-target="photo_s4" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s5">
+            <label><input type="checkbox" class="security-task" data-id="s5"> Настроить резервное копирование</label>
+            <div class="task-photos" data-photo-id="s5"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s5">
+            <button class="btn secondary small photo-btn" data-target="photo_s5" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s6">
+            <label><input type="checkbox" class="security-task" data-id="s6"> Проверить доступы приложений к аккаунту</label>
+            <div class="task-photos" data-photo-id="s6"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s6">
+            <button class="btn secondary small photo-btn" data-target="photo_s6" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s7">
+            <label><input type="checkbox" class="security-task" data-id="s7"> Изучить пример фишингового письма</label>
+            <div class="task-photos" data-photo-id="s7"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s7">
+            <button class="btn secondary small photo-btn" data-target="photo_s7" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s8">
+            <label><input type="checkbox" class="security-task" data-id="s8"> Включить блокировку экрана</label>
+            <div class="task-photos" data-photo-id="s8"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s8">
+            <button class="btn secondary small photo-btn" data-target="photo_s8" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s9">
+            <label><input type="checkbox" class="security-task" data-id="s9"> Настроить шифрование диска</label>
+            <div class="task-photos" data-photo-id="s9"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s9">
+            <button class="btn secondary small photo-btn" data-target="photo_s9" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+          <div class="task-item" data-task-id="s10">
+            <label><input type="checkbox" class="security-task" data-id="s10"> Отключить авто-подключение к Wi-Fi</label>
+            <div class="task-photos" data-photo-id="s10"></div>
+            <input type="file" class="photo-input" accept="image/*" multiple hidden id="photo_s10">
+            <button class="btn secondary small photo-btn" data-target="photo_s10" type="button">📎 Фото</button>
+            <span class="status-badge">не отмечено</span>
+          </div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="securityProgress"></div></div>
+        <p class="small-note" id="securityProgressText">Отмечено 0 из 10 заданий</p>
+        <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+          <button class="btn" id="submitSecurityTasksBtn">✅ Зафиксировать выполнение</button>
+          <button class="btn secondary small" id="resetSecurityTasksBtn">🔄 Сбросить</button>
+        </div>
+        <div class="lock-notice" id="securityTasksLockNotice">🔒 Задание зафиксировано и заблокировано для изменения.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-info">📋 Прогресс сохраняется в браузере</div>
+    <button class="btn" id="generateReportBtn">📄 Сформировать отчёт</button>
+  </footer>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div class="modal-overlay" id="reportModal">
+  <div class="modal">
+    <h2>📄 Отчёт по изучению тем</h2>
+    <div id="reportContent" class="report-content"></div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="closeModalBtn">Закрыть</button>
+      <button class="btn secondary" id="downloadTxtBtn">💾 .txt</button>
+      <button class="btn secondary" id="downloadWordBtn">📝 .doc</button>
+      <button class="btn" id="downloadPdfBtn">📕 .pdf</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+<script>
+window.addEventListener('load', function() {
+  console.log('🚀 Приложение запускается...');
+
+  (function() {
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+    function safeGet(id) {
+      const el = document.getElementById(id);
+      if (!el) console.warn(`⚠️ Элемент с id="${id}" не найден`);
+      return el;
+    }
+
+    function showFeedback(el, type, msg) {
+      if (!el) return;
+      el.className = 'feedback ' + type;
+      el.innerHTML = msg;
+      el.style.display = 'block';
+    }
+
+    // ========== ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ==========
+    const tabBtns = $$('.tab-btn');
+    const panels = $$('.panel');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = document.getElementById(btn.dataset.tab);
+        if (tab) tab.classList.add('active');
+      });
+    });
+
+    // ========== ФИО И ГРУППА ==========
+    const studentNameInput = safeGet('studentName');
+    const studentGroupInput = safeGet('studentGroup');
+
+    if (studentNameInput) {
+      studentNameInput.value = localStorage.getItem('studentName') || '';
+      studentNameInput.addEventListener('input', function() {
+        localStorage.setItem('studentName', this.value.trim());
+      });
+    }
+    if (studentGroupInput) {
+      studentGroupInput.value = localStorage.getItem('studentGroup') || '';
+      studentGroupInput.addEventListener('input', function() {
+        localStorage.setItem('studentGroup', this.value.trim());
+      });
+    }
+
+    // ========== ФОТО-ПРИКРЕПЛЕНИЯ ==========
+    let taskPhotos = {};
+    try {
+      taskPhotos = JSON.parse(localStorage.getItem('taskPhotos') || '{}');
+      if (typeof taskPhotos !== 'object' || taskPhotos === null) taskPhotos = {};
+    } catch (e) {
+      console.warn('Повреждённые данные taskPhotos — сбрасываем:', e);
+      taskPhotos = {};
+    }
+
+    function compressImage(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = new Image();
+          img.onload = () => {
+            const maxSide = 1200;
+            let { width, height } = img;
+            if (width > maxSide || height > maxSide) {
+              if (width > height) {
+                height = Math.round(height * maxSide / width);
+                width = maxSide;
+              } else {
+                width = Math.round(width * maxSide / height);
+                height = maxSide;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.8));
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function saveTaskPhotos() {
+      try {
+        localStorage.setItem('taskPhotos', JSON.stringify(taskPhotos));
+      } catch (e) {
+        alert('Не удалось сохранить фото: превышен лимит хранилища браузера.');
+      }
+    }
+
+    function renderTaskPhotos(taskId) {
+      const container = document.querySelector(`.task-photos[data-photo-id="${taskId}"]`);
+      if (!container) return;
+      container.innerHTML = '';
+      const photos = Array.isArray(taskPhotos[taskId]) ? taskPhotos[taskId] : [];
+      photos.forEach((photo, idx) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'photo-thumb';
+        thumb.title = photo.name;
+        thumb.innerHTML = `
+          <img src="${photo.dataUrl}" alt="${photo.name}">
+          <button class="remove-photo" type="button" title="Удалить">×</button>
+        `;
+        thumb.querySelector('img').addEventListener('click', () => openPhotoModal(photo.dataUrl));
+        thumb.querySelector('.remove-photo').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!confirm('Удалить это фото?')) return;
+          taskPhotos[taskId].splice(idx, 1);
+          if (taskPhotos[taskId].length === 0) delete taskPhotos[taskId];
+          saveTaskPhotos();
+          renderTaskPhotos(taskId);
+          updatePhotoBtn(taskId);
+        });
+        container.appendChild(thumb);
+      });
+      updatePhotoBtn(taskId);
+    }
+
+    function updatePhotoBtn(taskId) {
+      const btn = document.querySelector(`.photo-btn[data-target="photo_${taskId}"]`);
+      if (!btn) return;
+      const count = (Array.isArray(taskPhotos[taskId]) ? taskPhotos[taskId] : []).length;
+      if (count > 0) {
+        btn.classList.add('has-photos');
+        btn.textContent = `📎 Фото (${count})`;
+      } else {
+        btn.classList.remove('has-photos');
+        btn.textContent = '📎 Фото';
+      }
+    }
+
+    function openPhotoModal(src) {
+      let overlay = document.querySelector('.photo-modal-overlay');
+      if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'photo-modal-overlay';
+        overlay.innerHTML = '<img src="" alt="Просмотр">';
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click', () => overlay.classList.remove('active'));
+      }
+      overlay.querySelector('img').src = src;
+      overlay.classList.add('active');
+    }
+
+    $$('.photo-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = document.getElementById(this.dataset.target);
+        if (input) input.click();
+      });
+    });
+
+    $$('.photo-input').forEach(input => {
+      input.addEventListener('change', async function() {
+        const taskId = this.id.replace('photo_', '');
+        const files = Array.from(this.files);
+        if (!Array.isArray(taskPhotos[taskId])) taskPhotos[taskId] = [];
+        for (const file of files) {
+          if (!file.type.startsWith('image/')) continue;
+          try {
+            const dataUrl = await compressImage(file);
+            taskPhotos[taskId].push({ name: file.name, dataUrl, size: file.size });
+          } catch (err) {
+            console.error('Ошибка загрузки фото:', err);
+          }
+        }
+        saveTaskPhotos();
+        renderTaskPhotos(taskId);
+        this.value = '';
+      });
+    });
+
+    Object.keys(taskPhotos).forEach(taskId => renderTaskPhotos(taskId));
+
+    // ========== ТЕСТЫ ==========
+    function setupQuiz(containerId, feedbackId, checkBtnId, lockNoticeId, correctMap, storageKey) {
+      const container = safeGet(containerId);
+      const checkBtn = safeGet(checkBtnId);
+      const lockNotice = safeGet(lockNoticeId);
+      const feedbackEl = safeGet(feedbackId);
+      if (!container || !checkBtn) return;
+
+      const savedLock = localStorage.getItem(storageKey + '_locked') === 'true';
+
+      function lockQuiz() {
+        container.dataset.locked = 'true';
+        checkBtn.disabled = true;
+        checkBtn.style.opacity = '0.5';
+        checkBtn.style.cursor = 'not-allowed';
+        $$('input[type="radio"]', container).forEach(r => r.disabled = true);
+        $$('.quiz-option', container).forEach(o => o.classList.add('locked'));
+        if (lockNotice) lockNotice.classList.add('show');
+      }
+
+      if (savedLock) {
+        lockQuiz();
+        let savedAnswers = {};
+        try { savedAnswers = JSON.parse(localStorage.getItem(storageKey + '_answers') || '{}'); } catch (e) {}
+        Object.keys(savedAnswers).forEach(name => {
+          const radio = container.querySelector(`input[name="${name}"][value="${savedAnswers[name]}"]`);
+          if (radio) {
+            radio.checked = true;
+            radio.closest('.quiz-option').classList.add('selected');
+          }
+        });
+        Object.keys(correctMap).forEach(name => {
+          const correctVal = correctMap[name];
+          $$(`input[name="${name}"]`, container).forEach(radio => {
+            const opt = radio.closest('.quiz-option');
+            if (radio.value === correctVal) opt.classList.add('correct-answer');
+            else if (radio.checked) opt.classList.add('wrong-answer');
+          });
+        });
+        let correct = 0, total = Object.keys(correctMap).length;
+        Object.keys(correctMap).forEach(name => {
+          if (savedAnswers[name] === correctMap[name]) correct++;
+        });
+        const cls = correct === total ? 'correct' : (correct > 0 ? 'info' : 'incorrect');
+        showFeedback(feedbackEl, cls, `Правильно: ${correct} из ${total}`);
+      }
+
+      $$('.quiz-option', container).forEach(opt => {
+        opt.addEventListener('click', function(e) {
+          if (savedLock || container.dataset.locked === 'true') return;
+          if (e.target.tagName === 'INPUT') return;
+          const radio = this.querySelector('input');
+          if (radio) radio.checked = true;
+          const name = radio.name;
+          $$(`input[name="${name}"]`, container).forEach(r => r.closest('.quiz-option').classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+
+      checkBtn.addEventListener('click', function() {
+        if (container.dataset.locked === 'true') return;
+        const names = Object.keys(correctMap);
+        let allAnswered = true;
+        const answers = {};
+        names.forEach(name => {
+          const sel = container.querySelector(`input[name="${name}"]:checked`);
+          if (!sel) allAnswered = false;
+          else answers[name] = sel.value;
+        });
+        if (!allAnswered) {
+          showFeedback(feedbackEl, 'incorrect', '⚠️ Ответьте, пожалуйста, на все вопросы перед проверкой.');
+          return;
+        }
+        let correct = 0;
+        names.forEach(name => {
+          const correctVal = correctMap[name];
+          $$(`input[name="${name}"]`, container).forEach(radio => {
+            const opt = radio.closest('.quiz-option');
+            if (radio.value === correctVal) opt.classList.add('correct-answer');
+            else if (radio.checked) opt.classList.add('wrong-answer');
+          });
+          if (answers[name] === correctVal) correct++;
+        });
+        const total = names.length;
+        const cls = correct === total ? 'correct' : (correct > 0 ? 'info' : 'incorrect');
+        showFeedback(feedbackEl, cls, `Правильно: ${correct} из ${total}`);
+        localStorage.setItem(storageKey + '_answers', JSON.stringify(answers));
+        localStorage.setItem(storageKey + '_locked', 'true');
+        lockQuiz();
+      });
+    }
+
+    setupQuiz('cloud-quiz', 'cloudQuizFeedback', 'checkCloudQuiz', 'cloudQuizLockNotice',
+              { q1: 'b', q2: 'c' }, 'quiz_cloud');
+    setupQuiz('security-quiz', 'securityQuizFeedback', 'checkSecurityQuiz', 'securityQuizLockNotice',
+              { q3: 'c', q4: 'b' }, 'quiz_security');
+
+    // ========== ПРАКТИЧЕСКИЕ ЗАДАНИЯ ==========
+    const cloudCheckboxes = $$('.cloud-task');
+    const cloudProgress = safeGet('cloudProgress');
+    const cloudProgressText = safeGet('cloudProgressText');
+    const securityCheckboxes = $$('.security-task');
+    const securityProgress = safeGet('securityProgress');
+    const securityProgressText = safeGet('securityProgressText');
+
+    function updateTaskStyle(cb) {
+      const badge = cb.closest('.task-item')?.querySelector('.status-badge');
+      if (!badge) return;
+      badge.textContent = cb.checked ? 'отмечено' : 'не отмечено';
+      badge.classList.toggle('done', cb.checked);
+    }
+
+    function updateAllProgress() {
+      if (cloudProgress && cloudProgressText) {
+        const cd = cloudCheckboxes.filter(cb => cb.checked).length;
+        cloudProgress.style.width = (cloudCheckboxes.length ? cd / cloudCheckboxes.length * 100 : 0) + '%';
+        cloudProgressText.textContent = `Отмечено ${cd} из ${cloudCheckboxes.length} заданий`;
+      }
+      if (securityProgress && securityProgressText) {
+        const sd = securityCheckboxes.filter(cb => cb.checked).length;
+        securityProgress.style.width = (securityCheckboxes.length ? sd / securityCheckboxes.length * 100 : 0) + '%';
+        securityProgressText.textContent = `Отмечено ${sd} из ${securityCheckboxes.length} заданий`;
+      }
+    }
+
+    function lockTasks(checkboxes, submitBtnId, lockNoticeId) {
+      checkboxes.forEach(cb => {
+        cb.disabled = true;
+        const item = cb.closest('.task-item');
+        if (item) item.style.opacity = '0.85';
+      });
+      const submitBtn = safeGet(submitBtnId);
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+      }
+      const notice = safeGet(lockNoticeId);
+      if (notice) notice.classList.add('show');
+    }
+
+    function loadTasksState(checkboxes, prefix, submitBtnId, lockNoticeId) {
+      const locked = localStorage.getItem(prefix + '_locked') === 'true';
+      checkboxes.forEach(cb => {
+        if (localStorage.getItem(prefix + '_' + cb.dataset.id) === 'true') cb.checked = true;
+        updateTaskStyle(cb);
+        cb.addEventListener('change', function() {
+          if (locked) return;
+          localStorage.setItem(prefix + '_' + this.dataset.id, this.checked);
+          updateAllProgress();
+        });
+      });
+      if (locked) lockTasks(checkboxes, submitBtnId, lockNoticeId);
+    }
+
+    loadTasksState(cloudCheckboxes, 'cloudTask', 'submitCloudTasksBtn', 'cloudTasksLockNotice');
+    loadTasksState(securityCheckboxes, 'securityTask', 'submitSecurityTasksBtn', 'securityTasksLockNotice');
+    updateAllProgress();
+
+    const submitCloudBtn = safeGet('submitCloudTasksBtn');
+    if (submitCloudBtn) {
+      submitCloudBtn.addEventListener('click', function() {
+        localStorage.setItem('cloudTask_locked', 'true');
+        lockTasks(cloudCheckboxes, 'submitCloudTasksBtn', 'cloudTasksLockNotice');
+      });
+    }
+
+    const submitSecBtn = safeGet('submitSecurityTasksBtn');
+    if (submitSecBtn) {
+      submitSecBtn.addEventListener('click', function() {
+        localStorage.setItem('securityTask_locked', 'true');
+        lockTasks(securityCheckboxes, 'submitSecurityTasksBtn', 'securityTasksLockNotice');
+      });
+    }
+
+    const resetCloudBtn = safeGet('resetCloudTasksBtn');
+    if (resetCloudBtn) {
+      resetCloudBtn.addEventListener('click', function() {
+        if (!confirm('Сбросить прогресс практических заданий по облакам?')) return;
+        cloudCheckboxes.forEach(cb => {
+          cb.checked = false;
+          localStorage.removeItem('cloudTask_' + cb.dataset.id);
+          updateTaskStyle(cb);
+        });
+        localStorage.removeItem('cloudTask_locked');
+        location.reload();
+      });
+    }
+
+    const resetSecBtn = safeGet('resetSecurityTasksBtn');
+    if (resetSecBtn) {
+      resetSecBtn.addEventListener('click', function() {
+        if (!confirm('Сбросить прогресс практических заданий по безопасности?')) return;
+        securityCheckboxes.forEach(cb => {
+          cb.checked = false;
+          localStorage.removeItem('securityTask_' + cb.dataset.id);
+          updateTaskStyle(cb);
+        });
+        localStorage.removeItem('securityTask_locked');
+        location.reload();
+      });
+    }
+
+    // ========== ВИРТУАЛЬНОЕ ОБЛАКО ==========
+    const localZone = safeGet('localZone');
+    const cloudZone = safeGet('cloudZone');
+    const trashZone = safeGet('trashZone');
+    const localFiles = safeGet('localFiles');
+    const cloudFiles = safeGet('cloudFiles');
+    const cloudInteractFeedback = safeGet('cloudInteractFeedback');
+    let uploadedFiles = [];
+
+    function makeDraggable(item) {
+      item.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('text/plain', this.dataset.name);
+        this.classList.add('dragging');
+      });
+      item.addEventListener('dragend', function() {
+        this.classList.remove('dragging');
+      });
+    }
+
+    if (localFiles) $$('.file-item', localFiles).forEach(makeDraggable);
+
+    if (cloudZone) {
+      cloudZone.addEventListener('dragover', e => { e.preventDefault(); cloudZone.classList.add('dragover'); });
+      cloudZone.addEventListener('dragleave', () => cloudZone.classList.remove('dragover'));
+      cloudZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        cloudZone.classList.remove('dragover');
+        const name = e.dataTransfer.getData('text/plain');
+        const fileEl = localFiles ? $(`.file-item[data-name="${name}"]`, localFiles) : null;
+        if (!fileEl) return;
+        uploadToCloud(fileEl);
+      });
+    }
+
+    if (localZone) {
+      localZone.addEventListener('dragover', e => { e.preventDefault(); localZone.classList.add('dragover'); });
+      localZone.addEventListener('dragleave', () => localZone.classList.remove('dragover'));
+      localZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        localZone.classList.remove('dragover');
+        const name = e.dataTransfer.getData('text/plain');
+        const fileEl = cloudFiles ? $(`.file-item[data-name="${name}"]`, cloudFiles) : null;
+        if (!fileEl) return;
+        downloadFromCloud(fileEl);
+      });
+    }
+
+    if (trashZone) {
+      trashZone.addEventListener('dragover', e => { e.preventDefault(); trashZone.classList.add('dragover'); });
+      trashZone.addEventListener('dragleave', () => trashZone.classList.remove('dragover'));
+      trashZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        trashZone.classList.remove('dragover');
+        const name = e.dataTransfer.getData('text/plain');
+        const fileEl = cloudFiles ? $(`.file-item[data-name="${name}"]`, cloudFiles) : null;
+        if (!fileEl) return;
+        deleteFromCloud(fileEl);
+      });
+    }
+
+    function uploadToCloud(fileEl) {
+      const name = fileEl.dataset.name;
+      const size = fileEl.dataset.size;
+      const type = fileEl.dataset.type;
+      const icon = fileEl.querySelector('.file-icon')?.textContent || '📄';
+
+      fileEl.remove();
+      const newFile = document.createElement('li');
+      newFile.className = 'file-item uploaded';
+      newFile.draggable = true;
+      newFile.dataset.name = name;
+      newFile.dataset.size = size;
+      newFile.dataset.type = type;
+      newFile.innerHTML = `<span class="file-icon">${icon}</span> ${name} <span class="cloud-badge">в облаке</span>`;
+      newFile.addEventListener('click', () => showFileDetails(name, size, type));
+      makeDraggable(newFile);
+      if (cloudFiles) cloudFiles.appendChild(newFile);
+      uploadedFiles.push({ name, size, type });
+      showFeedback(cloudInteractFeedback, 'correct', `✅ Файл <strong>${name}</strong> (${size}) загружен в облако!`);
+    }
+
+    function downloadFromCloud(fileEl) {
+      const name = fileEl.dataset.name;
+      const size = fileEl.dataset.size;
+      const type = fileEl.dataset.type;
+      const icon = fileEl.querySelector('.file-icon')?.textContent || '📄';
+
+      fileEl.remove();
+      uploadedFiles = uploadedFiles.filter(f => f.name !== name);
+      const newFile = document.createElement('li');
+      newFile.className = 'file-item';
+      newFile.draggable = true;
+      newFile.dataset.name = name;
+      newFile.dataset.size = size;
+      newFile.dataset.type = type;
+      newFile.innerHTML = `<span class="file-icon">${icon}</span> ${name} <span style="color:#5f7d9c;font-size:0.78rem;">${size}</span>`;
+      makeDraggable(newFile);
+      if (localFiles) localFiles.appendChild(newFile);
+      showFeedback(cloudInteractFeedback, 'info', `⬇️ Файл <strong>${name}</strong> скачан обратно на компьютер.`);
+    }
+
+    function deleteFromCloud(fileEl) {
+      const name = fileEl.dataset.name;
+      fileEl.remove();
+      uploadedFiles = uploadedFiles.filter(f => f.name !== name);
+      showFeedback(cloudInteractFeedback, 'incorrect', `🗑️ Файл <strong>${name}</strong> удалён из облака.`);
+    }
+
+    function showFileDetails(name, size, type) {
+      showFeedback(cloudInteractFeedback, 'info',
+        `📋 <strong>${name}</strong><br>Тип: ${type}<br>Размер: ${size}<br>Статус: загружен в облако<br>Доступ: только владелец`);
+    }
+
+    const cloudResetBtn = safeGet('cloudResetBtn');
+    if (cloudResetBtn) {
+      cloudResetBtn.addEventListener('click', function() {
+        if (confirm('Сбросить состояние облака?')) location.reload();
+      });
+    }
+
+    const cloudDetailsBtn = safeGet('cloudDetailsBtn');
+    if (cloudDetailsBtn) {
+      cloudDetailsBtn.addEventListener('click', function() {
+        if (uploadedFiles.length === 0) {
+          showFeedback(cloudInteractFeedback, 'info', 'ℹ️ В облаке пока нет файлов.');
+        } else {
+          const list = uploadedFiles.map(f => `📄 ${f.name} (${f.size})`).join('<br>');
+          showFeedback(cloudInteractFeedback, 'info', `<strong>Файлы в облаке (${uploadedFiles.length}):</strong><br>${list}`);
+        }
+      });
+    }
+
+    // ========== ПРАВА ДОСТУПА ==========
+    const accessTool = safeGet('accessTool');
+    const accessCheckBtn = safeGet('checkAccessBtn');
+    const accessResetBtn = safeGet('accessResetBtn');
+    const accessFeedback = safeGet('accessFeedback');
+    const accessLockNotice = safeGet('accessLockNotice');
+    const accessLocked = localStorage.getItem('access_locked') === 'true';
+
+    function lockAccess() {
+      if (!accessTool) return;
+      accessTool.dataset.locked = 'true';
+      $$('.access-tool input[type="checkbox"]:not([disabled])').forEach(cb => cb.disabled = true);
+      if (accessCheckBtn) {
+        accessCheckBtn.disabled = true;
+        accessCheckBtn.style.opacity = '0.5';
+        accessCheckBtn.style.cursor = 'not-allowed';
+      }
+      if (accessLockNotice) accessLockNotice.classList.add('show');
+    }
+
+    function checkAccessIssues() {
+      const editorEdit = $('input[data-role="editor"][data-perm="edit"]')?.checked;
+      const commenterEdit = $('input[data-role="commenter"][data-perm="edit"]')?.checked;
+      const viewerEdit = $('input[data-role="viewer"][data-perm="edit"]')?.checked;
+      const viewerShare = $('input[data-role="viewer"][data-perm="share"]')?.checked;
+      const commenterShare = $('input[data-role="commenter"][data-perm="share"]')?.checked;
+      const issues = [];
+      if (!editorEdit) issues.push('Редактор должен иметь право редактирования.');
+      if (commenterEdit) issues.push('Комментатор НЕ должен иметь право редактирования.');
+      if (viewerEdit) issues.push('Читатель НЕ должен иметь право редактирования.');
+      if (viewerShare) issues.push('Читатель НЕ должен иметь право делиться.');
+      if (commenterShare) issues.push('Комментатор НЕ должен иметь право делиться.');
+      return issues;
+    }
+
+    if (accessLocked && accessTool) {
+      lockAccess();
+      let saved = {};
+      try { saved = JSON.parse(localStorage.getItem('access_answers') || '{}'); } catch (e) {}
+      $$('.access-tool input[type="checkbox"]:not([disabled])').forEach(cb => {
+        const key = cb.dataset.role + '_' + cb.dataset.perm;
+        cb.checked = saved[key] === true;
+      });
+      const issues = checkAccessIssues();
+      if (issues.length === 0) {
+        showFeedback(accessFeedback, 'correct', '✅ Отлично! Права доступа настроены корректно и безопасно.');
+      } else {
+        showFeedback(accessFeedback, 'incorrect', `⚠️ Найдены проблемы:<br>• ${issues.join('<br>• ')}`);
+      }
+    }
+
+    if (accessCheckBtn) {
+      accessCheckBtn.addEventListener('click', function() {
+        if (accessTool && accessTool.dataset.locked === 'true') return;
+        const issues = checkAccessIssues();
+        if (issues.length === 0) {
+          showFeedback(accessFeedback, 'correct', '✅ Отлично! Права доступа настроены корректно и безопасно.');
+        } else {
+          showFeedback(accessFeedback, 'incorrect', `⚠️ Найдены проблемы:<br>• ${issues.join('<br>• ')}`);
+        }
+        const answers = {};
+        $$('.access-tool input[type="checkbox"]:not([disabled])').forEach(cb => {
+          answers[cb.dataset.role + '_' + cb.dataset.perm] = cb.checked;
+        });
+        localStorage.setItem('access_answers', JSON.stringify(answers));
+        localStorage.setItem('access_locked', 'true');
+        lockAccess();
+      });
+    }
+
+    if (accessResetBtn) {
+      accessResetBtn.addEventListener('click', function() {
+        if (!confirm('Сбросить задание «Права доступа»?')) return;
+        localStorage.removeItem('access_answers');
+        localStorage.removeItem('access_locked');
+        location.reload();
+      });
+    }
+
+    // ========== СИМУЛЯТОР ФИШИНГА ==========
+    const phishingFeedback = safeGet('phishingFeedback');
+    const phishingLockNotice = safeGet('phishingLockNotice');
+    const phishingScoreEl = safeGet('phishingScore');
+    let phishAnswers = {};
+    try { phishAnswers = JSON.parse(localStorage.getItem('phish_answers') || '{}'); } catch (e) { phishAnswers = {}; }
+
+    function updatePhishingScore() {
+      if (!phishingScoreEl) return;
+      const score = Object.values(phishAnswers).filter(v => v).length;
+      phishingScoreEl.textContent = score;
+    }
+
+    Object.keys(phishAnswers).forEach(id => {
+      const emailItem = $(`.email-item[data-id="${id}"]`);
+      if (!emailItem) return;
+      const isCorrect = phishAnswers[id];
+      const statusEl = emailItem.querySelector('.email-status');
+      if (statusEl) statusEl.textContent = isCorrect ? '✅' : '❌';
+      emailItem.classList.add(isCorrect ? 'legit-answer' : 'phish-answer');
+      emailItem.classList.add('locked');
+      $$(`.email-detail[data-detail="${id}"] button`).forEach(b => b.disabled = true);
+    });
+    updatePhishingScore();
+    if (Object.keys(phishAnswers).length === 4 && phishingLockNotice) {
+      phishingLockNotice.classList.add('show');
+    }
+
+    $$('#inbox .email-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const detail = $(`.email-detail[data-detail="${id}"]`);
+        if (!detail) return;
+        const isOpen = !detail.classList.contains('hidden');
+        if (isOpen) {
+          detail.classList.add('hidden');
+          this.classList.remove('opened');
+        } else {
+          $$('.email-detail').forEach(d => d.classList.add('hidden'));
+          $$('.email-item').forEach(e => e.classList.remove('opened'));
+          detail.classList.remove('hidden');
+          this.classList.add('opened');
+        }
+      });
+    });
+
+    $$('.email-detail .link-danger, .email-detail .link-safe').forEach(link => {
+      link.addEventListener('click', function() {
+        const action = this.dataset.action;
+        if (action === 'danger') {
+          showFeedback(phishingFeedback, 'incorrect', '⚠️ <strong>ОСТОРОЖНО!</strong> Это подозрительная ссылка. Никогда не вводите данные по ссылкам из писем!');
+        } else {
+          showFeedback(phishingFeedback, 'correct', '✅ Это официальный домен. Но всегда проверяйте адресную строку перед вводом данных.');
+        }
+      });
+    });
+
+    $$('.email-detail button[data-answer]').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        if (phishAnswers[id] !== undefined) return;
+        const answer = this.dataset.answer;
+        const emailItem = $(`.email-item[data-id="${id}"]`);
+        if (!emailItem) return;
+        const correctType = emailItem.dataset.type;
+        const isCorrect = (answer === correctType);
+
+        phishAnswers[id] = isCorrect;
+        localStorage.setItem('phish_answers', JSON.stringify(phishAnswers));
+
+        const statusEl = emailItem.querySelector('.email-status');
+        if (statusEl) statusEl.textContent = isCorrect ? '✅' : '❌';
+        emailItem.classList.add(isCorrect ? 'legit-answer' : 'phish-answer');
+        emailItem.classList.add('locked');
+
+        updatePhishingScore();
+        $$(`.email-detail[data-detail="${id}"] button`).forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+          showFeedback(phishingFeedback, 'correct', `✅ Верно! Это ${correctType === 'phish' ? 'фишинговое' : 'легитимное'} письмо.`);
+        } else {
+          showFeedback(phishingFeedback, 'incorrect', `❌ Неверно. Это ${correctType === 'phish' ? 'фишинговое' : 'легитимное'} письмо.`);
+        }
+
+        if (Object.keys(phishAnswers).length === 4 && phishingLockNotice) {
+          phishingLockNotice.classList.add('show');
+        }
+      });
+    });
+
+    // ========== ГЕНЕРАТОР ПАРОЛЕЙ ==========
+    const lengthSlider = safeGet('lengthSlider');
+    const lengthValue = safeGet('lengthValue');
+    const passwordOutput = safeGet('passwordOutput');
+    const strengthFill = safeGet('strengthFill');
+    const strengthText = safeGet('strengthText');
+
+    if (lengthSlider && lengthValue) {
+      lengthSlider.addEventListener('input', () => {
+        lengthValue.textContent = lengthSlider.value;
+      });
+    }
+
+    function calcStrength(password) {
+      if (!password || password === 'Нажмите «Сгенерировать»') return { score: 0, label: '—', color: '#e9eef4' };
+      let score = 0;
+      if (password.length >= 8) score += 20;
+      if (password.length >= 12) score += 15;
+      if (password.length >= 16) score += 15;
+      if (/[a-z]/.test(password)) score += 10;
+      if (/[A-Z]/.test(password)) score += 10;
+      if (/[0-9]/.test(password)) score += 10;
+      if (/[^A-Za-z0-9]/.test(password)) score += 20;
+      score = Math.min(score, 100);
+
+      let label, color;
+      if (score < 30) { label = 'Слабый'; color = '#c0392b'; }
+      else if (score < 60) { label = 'Средний'; color = '#e69717'; }
+      else if (score < 85) { label = 'Хороший'; color = '#2b5f8a'; }
+      else { label = 'Очень надёжный'; color = '#0d5a2b'; }
+      return { score, label, color };
+    }
+
+    function updateStrength(password) {
+      if (!strengthFill || !strengthText) return;
+      const s = calcStrength(password);
+      strengthFill.style.width = s.score + '%';
+      strengthFill.style.background = s.color;
+      strengthText.textContent = `Надёжность: ${s.label} (${s.score}%)`;
+      strengthText.style.color = s.color;
+    }
+
+    function generatePassword() {
+      if (!lengthSlider || !passwordOutput) return;
+      const length = parseInt(lengthSlider.value);
+      const useUpper = safeGet('useUpper')?.checked;
+      const useLower = safeGet('useLower')?.checked;
+      const useDigits = safeGet('useDigits')?.checked;
+      const useSymbols = safeGet('useSymbols')?.checked;
+      const excludeAmbiguous = safeGet('excludeAmbiguous')?.checked;
+
+      let upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let lower = 'abcdefghijklmnopqrstuvwxyz';
+      let digits = '0123456789';
+      let symbols = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+      if (excludeAmbiguous) {
+        upper = upper.replace(/[OI]/g, '');
+        lower = lower.replace(/[lo]/g, '');
+        digits = digits.replace(/[01]/g, '');
+        symbols = symbols.replace(/[|]/g, '');
+      }
+
+      let pool = '';
+      if (useUpper) pool += upper;
+      if (useLower) pool += lower;
+      if (useDigits) pool += digits;
+      if (useSymbols) pool += symbols;
+
+      if (!pool) {
+        alert('Выберите хотя бы один тип символов!');
+        return;
+      }
+
+      let password = '';
+      const required = [];
+      if (useUpper) required.push(upper[Math.floor(Math.random() * upper.length)]);
+      if (useLower) required.push(lower[Math.floor(Math.random() * lower.length)]);
+      if (useDigits) required.push(digits[Math.floor(Math.random() * digits.length)]);
+      if (useSymbols) required.push(symbols[Math.floor(Math.random() * symbols.length)]);
+
+      for (let i = required.length; i < length; i++) {
+        password += pool[Math.floor(Math.random() * pool.length)];
+      }
+      const all = required.concat(password.split(''));
+      for (let i = all.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [all[i], all[j]] = [all[j], all[i]];
+      }
+      password = all.join('').slice(0, length);
+
+      passwordOutput.textContent = password;
+      updateStrength(password);
+    }
+
+    const generateBtn = safeGet('generatePasswordBtn');
+    if (generateBtn) generateBtn.addEventListener('click', generatePassword);
+
+    const copyBtn = safeGet('copyPasswordBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        const pwd = passwordOutput?.textContent;
+        if (pwd && pwd !== 'Нажмите «Сгенерировать»') {
+          navigator.clipboard.writeText(pwd).then(() => {
+            this.textContent = '✅';
+            setTimeout(() => this.textContent = '📋', 1500);
+          });
+        }
+      });
+    }
+
+    const testPwdBtn = safeGet('testPasswordBtn');
+    if (testPwdBtn) {
+      testPwdBtn.addEventListener('click', function() {
+        safeGet('passwordTestArea')?.classList.toggle('hidden');
+      });
+    }
+
+    const checkUserPwdBtn = safeGet('checkUserPasswordBtn');
+    if (checkUserPwdBtn) {
+      checkUserPwdBtn.addEventListener('click', function() {
+        const pwd = safeGet('userPasswordInput')?.value;
+        const fb = safeGet('userPasswordFeedback');
+        if (!pwd) {
+          showFeedback(fb, 'incorrect', 'Введите пароль для проверки.');
+          return;
+        }
+        const s = calcStrength(pwd);
+        const tips = [];
+        if (pwd.length < 12) tips.push('увеличьте длину (минимум 12 символов)');
+        if (!/[A-Z]/.test(pwd)) tips.push('добавьте заглавные буквы');
+        if (!/[a-z]/.test(pwd)) tips.push('добавьте строчные буквы');
+        if (!/[0-9]/.test(pwd)) tips.push('добавьте цифры');
+        if (!/[^A-Za-z0-9]/.test(pwd)) tips.push('добавьте спецсимволы (!@#$%)');
+        if (/^(123|qwerty|password|admin)/i.test(pwd)) tips.push('избегайте очевидных комбинаций');
+
+        const cls = s.score >= 60 ? 'correct' : 'incorrect';
+        showFeedback(fb, cls, `${s.label} (${s.score}%)${tips.length ? '<br>💡 Советы: ' + tips.join('; ') : ''}`);
+      });
+    }
+
+    // ========== СОРТИРОВКА ==========
+    const sortCorrectMap = {
+      si1: 'safe', si2: 'danger', si3: 'safe', si4: 'danger',
+      si5: 'safe', si6: 'danger', si7: 'safe', si8: 'danger'
+    };
+
+    const sortItems = $$('#sortItems .sort-item');
+    const safeZone = safeGet('safeZone');
+    const dangerZone = safeGet('dangerZone');
+    const sortPool = safeGet('sortPool');
+    const sortFeedback = safeGet('sortFeedback');
+    const sortLockNotice = safeGet('sortLockNotice');
+    let sortState = {};
+    try { sortState = JSON.parse(localStorage.getItem('sort_state') || '{}'); } catch (e) { sortState = {}; }
+    const sortLocked = localStorage.getItem('sort_locked') === 'true';
+
+    Object.keys(sortState).forEach(id => {
+      const item = $(`.sort-item[data-id="${id}"]`);
+      const zone = sortState[id];
+      if (!item) return;
+      if (zone === 'safe' && safeZone) safeZone.appendChild(item);
+      else if (zone === 'danger' && dangerZone) dangerZone.appendChild(item);
+    });
+
+    function lockSort(isRestore) {
+      sortItems.forEach(item => {
+        item.draggable = false;
+        item.classList.add('locked');
+        if (isRestore) {
+          const id = item.dataset.id;
+          const correctAns = sortCorrectMap[id];
+          const userAns = sortState[id];
+          if (userAns === correctAns) item.classList.add('correct');
+          else if (userAns) item.classList.add('wrong');
+        }
+      });
+      const btn = safeGet('checkSortBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+      }
+      if (sortLockNotice) sortLockNotice.classList.add('show');
+
+      if (isRestore) {
+        let correct = 0, total = sortItems.length;
+        sortItems.forEach(item => {
+          if (sortState[item.dataset.id] === sortCorrectMap[item.dataset.id]) correct++;
+        });
+        if (correct === total) {
+          showFeedback(sortFeedback, 'correct', `🎉 Отлично! Все ${total} привычек распределены верно.`);
+        } else {
+          showFeedback(sortFeedback, 'incorrect', `Правильно: ${correct} из ${total}.`);
+        }
+      }
+    }
+
+    if (sortLocked) lockSort(true);
+
+    sortItems.forEach(item => {
+      item.addEventListener('dragstart', function(e) {
+        if (sortLocked) { e.preventDefault(); return; }
+        e.dataTransfer.setData('text/plain', this.dataset.id);
+        this.classList.add('dragging');
+      });
+      item.addEventListener('dragend', function() { this.classList.remove('dragging'); });
+    });
+
+    [safeZone, dangerZone, sortPool].forEach(zone => {
+      if (!zone) return;
+      zone.addEventListener('dragover', e => {
+        if (sortLocked) return;
+        e.preventDefault();
+        zone.classList.add('dragover');
+      });
+      zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+      zone.addEventListener('drop', function(e) {
+        if (sortLocked) return;
+        e.preventDefault();
+        zone.classList.remove('dragover');
+        const id = e.dataTransfer.getData('text/plain');
+        const item = $(`.sort-item[data-id="${id}"]`);
+        if (!item) return;
+        let targetContainer;
+        if (zone === safeZone) targetContainer = safeZone;
+        else if (zone === dangerZone) targetContainer = dangerZone;
+        else targetContainer = document.getElementById('sortItems');
+        if (!targetContainer) return;
+        targetContainer.appendChild(item);
+        sortState[id] = zone === safeZone ? 'safe' : (zone === dangerZone ? 'danger' : null);
+        localStorage.setItem('sort_state', JSON.stringify(sortState));
+      });
+    });
+
+    const checkSortBtn = safeGet('checkSortBtn');
+    if (checkSortBtn) {
+      checkSortBtn.addEventListener('click', function() {
+        if (sortLocked) return;
+        let correct = 0, total = sortItems.length, wrong = [];
+        sortItems.forEach(item => {
+          const id = item.dataset.id;
+          const correctAns = sortCorrectMap[id];
+          const userAns = sortState[id];
+          item.classList.remove('correct', 'wrong');
+          if (userAns === correctAns) {
+            correct++;
+            item.classList.add('correct');
+          } else if (userAns) {
+            item.classList.add('wrong');
+            wrong.push(item.textContent.trim());
+          } else {
+            wrong.push(item.textContent.trim() + ' (не распределено)');
+          }
+        });
+        if (correct === total) {
+          showFeedback(sortFeedback, 'correct', `🎉 Отлично! Все ${total} привычек распределены верно.`);
+        } else {
+          showFeedback(sortFeedback, 'incorrect', `Правильно: ${correct} из ${total}.<br>Проверьте:<br>• ${wrong.join('<br>• ')}`);
+        }
+        localStorage.setItem('sort_locked', 'true');
+        lockSort(false);
+      });
+    }
+
+    const resetSortBtn = safeGet('resetSortBtn');
+    if (resetSortBtn) {
+      resetSortBtn.addEventListener('click', function() {
+        if (!confirm('Сбросить задание «Сортировка привычек»?')) return;
+        localStorage.removeItem('sort_state');
+        localStorage.removeItem('sort_locked');
+        location.reload();
+      });
+    }
+
+    // ========== ПРОВЕРКА ПАРОЛЕЙ ==========
+    const passwordsCorrect = [true, false, true, false, false, true, false, true];
+    const passwordChecks = $$('#passwordsGrid .password-check');
+    const passwordsFeedback = safeGet('passwordsFeedback');
+    const passwordsLockNotice = safeGet('passwordsLockNotice');
+    const passwordsLocked = localStorage.getItem('passwords_locked') === 'true';
+    let passwordsSelected = {};
+    try { passwordsSelected = JSON.parse(localStorage.getItem('passwords_selected') || '{}'); } catch (e) { passwordsSelected = {}; }
+
+    passwordChecks.forEach((p, i) => {
+      if (passwordsSelected[i]) p.classList.add('selected');
+    });
+
+    function lockPasswords(isRestore) {
+      passwordChecks.forEach((p, i) => {
+        p.classList.add('locked');
+        if (isRestore) {
+          const isGood = passwordsCorrect[i];
+          const wasSelected = p.classList.contains('selected');
+          p.classList.remove('good', 'bad');
+          if (wasSelected === isGood) p.classList.add('good');
+          else p.classList.add('bad');
+        }
+      });
+      const btn = safeGet('checkPasswordsBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+      }
+      if (passwordsLockNotice) passwordsLockNotice.classList.add('show');
+
+      if (isRestore) {
+        let correct = 0;
+        passwordChecks.forEach((p, i) => {
+          if (p.classList.contains('selected') === passwordsCorrect[i]) correct++;
+        });
+        const total = passwordChecks.length;
+        if (correct === total) {
+          showFeedback(passwordsFeedback, 'correct', `🎉 Идеально! Все ${total} паролей оценены верно.`);
+        } else {
+          showFeedback(passwordsFeedback, 'info', `Правильно: ${correct} из ${total}.`);
+        }
+      }
+    }
+
+    if (passwordsLocked) lockPasswords(true);
+
+    passwordChecks.forEach((p, i) => {
+      p.addEventListener('click', function() {
+        if (passwordsLocked) return;
+        this.classList.toggle('selected');
+        passwordsSelected[i] = this.classList.contains('selected');
+        localStorage.setItem('passwords_selected', JSON.stringify(passwordsSelected));
+      });
+    });
+
+    const checkPasswordsBtn = safeGet('checkPasswordsBtn');
+    if (checkPasswordsBtn) {
+      checkPasswordsBtn.addEventListener('click', function() {
+        if (passwordsLocked) return;
+        let correct = 0;
+        passwordChecks.forEach((p, i) => {
+          const isGood = passwordsCorrect[i];
+          const wasSelected = p.classList.contains('selected');
+          p.classList.remove('good', 'bad');
+          if (wasSelected === isGood) {
+            correct++;
+            p.classList.add('good');
+          } else {
+            p.classList.add('bad');
+          }
+        });
+        const total = passwordChecks.length;
+        if (correct === total) {
+          showFeedback(passwordsFeedback, 'correct', `🎉 Идеально! Все ${total} паролей оценены верно.`);
+        } else {
+          showFeedback(passwordsFeedback, 'info', `Правильно: ${correct} из ${total}.`);
+        }
+        localStorage.setItem('passwords_locked', 'true');
+        lockPasswords(false);
+      });
+    }
+
+    const resetPasswordsBtn = safeGet('resetPasswordsBtn');
+    if (resetPasswordsBtn) {
+      resetPasswordsBtn.addEventListener('click', function() {
+        if (!confirm('Сбросить задание «Найди хорошие пароли»?')) return;
+        localStorage.removeItem('passwords_selected');
+        localStorage.removeItem('passwords_locked');
+        location.reload();
+      });
+    }
+
+    // ========== ОТЧЁТ ==========
+    const modal = safeGet('reportModal');
+    const reportContent = safeGet('reportContent');
+
+    function getQuizScore(containerId, correctMap) {
+      const container = document.getElementById(containerId);
+      if (!container) return { correct: 0, total: Object.keys(correctMap).length, answered: 0 };
+      let correct = 0, answered = 0;
+      Object.keys(correctMap).forEach(name => {
+        const sel = container.querySelector(`input[name="${name}"]:checked`);
+        if (sel) {
+          answered++;
+          if (sel.value === correctMap[name]) correct++;
+        }
+      });
+      return { correct, total: Object.keys(correctMap).length, answered };
+    }
+
+    function collectData() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('ru-RU') + ' ' + now.toLocaleTimeString('ru-RU');
+      const studentName = studentNameInput?.value.trim() || 'Не указано';
+      const studentGroup = studentGroupInput?.value.trim() || 'Не указана';
+
+      function getPhotos(id) {
+        try {
+          return Array.isArray(taskPhotos[id]) ? taskPhotos[id] : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      const cloudDone = [], cloudNot = [];
+      $$('.cloud-task').forEach(cb => {
+        const label = cb.closest('.task-item')?.querySelector('label')?.innerText.trim() || '';
+        const id = cb.dataset.id;
+        const item = { label, photos: getPhotos(id) };
+        (cb.checked ? cloudDone : cloudNot).push(item);
+      });
+      const secDone = [], secNot = [];
+      $$('.security-task').forEach(cb => {
+        const label = cb.closest('.task-item')?.querySelector('label')?.innerText.trim() || '';
+        const id = cb.dataset.id;
+        const item = { label, photos: getPhotos(id) };
+        (cb.checked ? secDone : secNot).push(item);
+      });
+
+      const cloudQuiz = getQuizScore('cloud-quiz', { q1: 'b', q2: 'c' });
+      const secQuiz = getQuizScore('security-quiz', { q3: 'c', q4: 'b' });
+
+      const phishScore = Object.values(phishAnswers).filter(v => v).length;
+      const phishTotal = Object.keys(phishAnswers).length;
+
+      let sortCorrectCount = 0;
+      sortItems.forEach(item => {
+        if (sortState[item.dataset.id] === sortCorrectMap[item.dataset.id]) sortCorrectCount++;
+      });
+
+      let passwordsCorrectCount = 0;
+      passwordChecks.forEach((p, i) => {
+        if (p.classList.contains('selected') === passwordsCorrect[i]) passwordsCorrectCount++;
+      });
+
+      const editorEdit = $('input[data-role="editor"][data-perm="edit"]')?.checked;
+      const commenterEdit = $('input[data-role="commenter"][data-perm="edit"]')?.checked;
+      const viewerEdit = $('input[data-role="viewer"][data-perm="edit"]')?.checked;
+      const viewerShare = $('input[data-role="viewer"][data-perm="share"]')?.checked;
+      const commenterShare = $('input[data-role="commenter"][data-perm="share"]')?.checked;
+      const accessIssues = [];
+      if (!editorEdit) accessIssues.push('Редактор должен иметь право редактирования.');
+      if (commenterEdit) accessIssues.push('Комментатор НЕ должен иметь право редактирования.');
+      if (viewerEdit) accessIssues.push('Читатель НЕ должен иметь право редактирования.');
+      if (viewerShare) accessIssues.push('Читатель НЕ должен иметь право делиться.');
+      if (commenterShare) accessIssues.push('Комментатор НЕ должен иметь право делиться.');
+
+      return { dateStr, studentName, studentGroup, cloudDone, cloudNot, secDone, secNot,
+               cloudQuiz, secQuiz, phishScore, phishTotal,
+               uploadedCount: uploadedFiles.length,
+               sortCorrectCount, sortTotal: sortItems.length,
+               passwordsCorrectCount, passwordsTotal: passwordChecks.length,
+               accessIssues };
+    }
+
+    function generateReportText() {
+      const d = collectData();
+      const totalDone = d.cloudDone.length + d.secDone.length;
+      const totalTasks = d.cloudDone.length + d.cloudNot.length + d.secDone.length + d.secNot.length;
+
+      function formatTaskList(items) {
+        if (!items.length) return '  (нет)';
+        return items.map(it => {
+          let line = '  ✔ ' + it.label;
+          if (it.photos.length) {
+            line += '\n      📷 Прикреплено фото: ' + it.photos.map(p => p.name).join(', ');
+          }
+          return line;
+        }).join('\n');
+      }
+      function formatTaskListNot(items) {
+        if (!items.length) return '  (все отмечены)';
+        return items.map(it => '  ✗ ' + it.label).join('\n');
+      }
+
+      return `
+ОТЧЁТ ПО ИЗУЧЕНИЮ ТЕМ
+"Облачные хранилища: файлы в интернете и работа вместе"
+"Базовая защита данных: цифровая гигиена"
+
+================================================
+СВЕДЕНИЯ О СТУДЕНТЕ
+================================================
+ФИО:     ${d.studentName}
+Группа:  ${d.studentGroup}
+Дата:    ${d.dateStr}
+
+================================================
+1. ТЕОРЕТИЧЕСКАЯ ЧАСТЬ
+================================================
+Тема 1. Облачные хранилища:
+- Изучены ключевые понятия: синхронизация, совместный доступ,
+  версионность, квота, корзина.
+- Рассмотрены типы облаков и правила совместной работы.
+
+Тест по теории (облака): ${d.cloudQuiz.correct} из ${d.cloudQuiz.total} правильных.
+Отвечено: ${d.cloudQuiz.answered} из ${d.cloudQuiz.total}.
+
+Тема 2. Базовая защита данных:
+- Изучены принципы цифровой гигиены: пароли, 2FA, обновления,
+  фишинг, резервное копирование.
+- Разобрано правило 3-2-1.
+
+Тест по теории (безопасность): ${d.secQuiz.correct} из ${d.secQuiz.total} правильных.
+Отвечено: ${d.secQuiz.answered} из ${d.secQuiz.total}.
+
+================================================
+2. ИНТЕРАКТИВНЫЕ ЗАДАНИЯ
+================================================
+Виртуальное облако: загружено файлов — ${d.uploadedCount}.
+Симулятор фишинга: правильно определено ${d.phishScore} из ${d.phishTotal} писем.
+Сортировка привычек: правильно распределено ${d.sortCorrectCount} из ${d.sortTotal}.
+Найди хорошие пароли: правильно ${d.passwordsCorrectCount} из ${d.passwordsTotal}.
+Права совместного доступа: ${d.accessIssues.length === 0 ? 'настроены верно' : 'найдены ошибки: ' + d.accessIssues.join('; ')}.
+
+================================================
+3. ПРАКТИЧЕСКИЕ ЗАДАНИЯ
+================================================
+Облачные хранилища — ОТМЕЧЕНО (${d.cloudDone.length}):
+${formatTaskList(d.cloudDone)}
+
+Облачные хранилища — НЕ ОТМЕЧЕНО (${d.cloudNot.length}):
+${formatTaskListNot(d.cloudNot)}
+
+Цифровая гигиена — ОТМЕЧЕНО (${d.secDone.length}):
+${formatTaskList(d.secDone)}
+
+Цифровая гигиена — НЕ ОТМЕЧЕНО (${d.secNot.length}):
+${formatTaskListNot(d.secNot)}
+
+================================================
+4. ИТОГИ
+================================================
+Практика: отмечено ${totalDone} из ${totalTasks} заданий.
+
+${totalTasks - totalDone > 0 ? 'РЕКОМЕНДАЦИЯ: продолжите выполнение оставшихся заданий.' : '🎉 Все задания отмечены!'}
+
+------------------------------------------------
+Отчёт сгенерирован автоматически в учебном приложении.
+      `.trim();
+    }
+
+    const generateReportBtn = safeGet('generateReportBtn');
+    if (generateReportBtn) {
+      generateReportBtn.addEventListener('click', function() {
+        console.log('🖱️ Кнопка «Сформировать отчёт» нажата');
+        try {
+          const text = generateReportText();
+          console.log('📄 Отчёт сгенерирован, длина:', text.length);
+          if (reportContent) reportContent.textContent = text;
+          if (modal) {
+            modal.classList.add('active');
+            console.log('✅ Модальное окно открыто');
+          } else {
+            console.error('❌ Модальное окно #reportModal не найдено');
+            alert('Ошибка: модальное окно отчёта не найдено');
+          }
+        } catch (err) {
+          console.error('❌ Ошибка при формировании отчёта:', err);
+          alert('Не удалось сформировать отчёт:\n' + err.message + '\n\nПодробности в консоли (F12).');
+        }
+      });
+    } else {
+      console.error('❌ Кнопка #generateReportBtn не найдена');
+    }
+
+    const closeModalBtn = safeGet('closeModalBtn');
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => modal?.classList.remove('active'));
+    }
+
+    if (modal) {
+      modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+    }
+
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function buildFileName(ext) {
+      const name = studentNameInput?.value.trim() || '';
+      const group = studentGroupInput?.value.trim() || '';
+      const parts = [];
+      if (name) parts.push(name.replace(/\s+/g, '_'));
+      if (group) parts.push(group.replace(/\s+/g, '_'));
+      const base = parts.length ? parts.join('_') : 'отчет';
+      return `${base}_облака_безопасность.${ext}`;
+    }
+
+    // ========== TXT ==========
+    const downloadTxtBtn = safeGet('downloadTxtBtn');
+    if (downloadTxtBtn) {
+      downloadTxtBtn.addEventListener('click', function() {
+        const text = reportContent?.textContent || '';
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = buildFileName('txt');
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+    }
+
+    // ========== WORD ==========
+    const downloadWordBtn = safeGet('downloadWordBtn');
+    if (downloadWordBtn) {
+      downloadWordBtn.addEventListener('click', function() {
+        const d = collectData();
+        const plainText = generateReportText();
+
+        function renderTaskHtml(items, isDone) {
+          if (!items.length) return `<p style="color:#888;font-style:italic;">${isDone ? '(нет)' : '(все отмечены)'}</p>`;
+          return items.map(it => {
+            let html = `<div style="margin-bottom:10px;padding:8px 12px;background:#f9fcff;border-left:3px solid ${isDone ? '#0d5a2b' : '#c0392b'};">
+              <p style="margin:0 0 6px;font-weight:600;color:#1e3e5c;font-family:Calibri,sans-serif;font-size:11pt;">${isDone ? '✔' : '✗'} ${escapeHtml(it.label)}</p>`;
+            if (it.photos && it.photos.length) {
+              html += '<table style="border-collapse:collapse;margin-top:6px;"><tr>';
+              it.photos.forEach(p => {
+                html += `<td style="padding:6px;vertical-align:top;text-align:center;">
+                  <img src="${p.dataUrl}" width="320" height="240" style="border:1px solid #b6cade;">
+                  <div style="font-size:9pt;color:#5f7d9c;margin-top:4px;font-family:Calibri,sans-serif;">${escapeHtml(p.name)}</div>
+                </td>`;
+              });
+              html += '</tr></table>';
+            }
+            html += '</div>';
+            return html;
+          }).join('');
+        }
+
+        const html = `<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+  <meta charset="utf-8">
+  <title>Отчёт по изучению тем</title>
+  <style>
+    @page { size: A4; margin: 2cm; }
+    body { font-family: 'Calibri', 'Segoe UI', sans-serif; font-size: 11pt; line-height: 1.5; color: #1e2b3c; }
+    h1 { font-size: 16pt; color: #1a3b5d; border-bottom: 2px solid #2b5f8a; padding-bottom: 6px; }
+    h2 { font-size: 13pt; color: #264e73; margin-top: 18px; margin-bottom: 8px; }
+    h3 { font-size: 11pt; color: #2b5f8a; margin-top: 12px; margin-bottom: 6px; }
+    .meta { background: #f4f8fe; border-left: 4px solid #2b5f8a; padding: 12px 16px; margin-bottom: 16px; }
+    .meta p { margin: 4px 0; font-size: 11pt; }
+    pre { font-family: 'Consolas', monospace; font-size: 9pt; white-space: pre-wrap; background: #f4f8fe; padding: 12px; border: 1px solid #d7e2ed; }
+    img { display: block; }
+  </style>
+</head>
+<body>
+  <h1>Отчёт по изучению тем</h1>
+  <div class="meta">
+    <p><strong>Студент:</strong> ${escapeHtml(d.studentName)}</p>
+    <p><strong>Группа:</strong> ${escapeHtml(d.studentGroup)}</p>
+    <p><strong>Дата:</strong> ${escapeHtml(d.dateStr)}</p>
+  </div>
+
+  <h2>1. Теоретическая часть и интерактивы</h2>
+  <pre>${escapeHtml(plainText.split('3. ПРАКТИЧЕСКИЕ ЗАДАНИЯ')[0].trim())}</pre>
+
+  <h2>2. Практические задания с фото-подтверждениями</h2>
+  <h3>Облачные хранилища — отмечено</h3>
+  ${renderTaskHtml(d.cloudDone, true)}
+  <h3>Цифровая гигиена — отмечено</h3>
+  ${renderTaskHtml(d.secDone, true)}
+</body>
+</html>`;
+
+        const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = buildFileName('doc');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      });
+    }
+
+    // ========== PDF ==========
+    const downloadPdfBtn = safeGet('downloadPdfBtn');
+    if (downloadPdfBtn) {
+      downloadPdfBtn.addEventListener('click', async function() {
+        if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+          alert('Библиотеки для создания PDF не загрузились. Проверьте интернет и обновите страницу.');
+          return;
+        }
+        const d = collectData();
+        const text = generateReportText();
+        const btn = this;
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '⏳ Готовим PDF...';
+
+        try {
+          const tempDiv = document.createElement('div');
+          tempDiv.style.cssText = `
+            padding: 30px 40px;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            color: #1e2b3c;
+            line-height: 1.5;
+            background: #ffffff;
+            width: 780px;
+            position: fixed;
+            left: -10000px;
+            top: 0;
+          `;
+
+          function renderTaskHtml(items, isDone) {
+            if (!items.length) return `<p style="color:#888;font-style:italic;margin:6px 0;">${isDone ? '(нет)' : '(все отмечены)'}</p>`;
+            return items.map(it => {
+              let html = `<div style="margin-bottom:14px;padding:10px 14px;background:#f9fcff;border-left:3px solid ${isDone ? '#0d5a2b' : '#c0392b'};border-radius:6px;">
+                <p style="margin:0 0 8px;font-weight:600;color:#1e3e5c;font-size:12px;">${isDone ? '✔' : '✗'} ${escapeHtml(it.label)}</p>`;
+              if (it.photos && it.photos.length) {
+                html += '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">';
+                it.photos.forEach(p => {
+                  html += `<div style="text-align:center;">
+                    <img src="${p.dataUrl}" style="width:280px;height:210px;object-fit:cover;border:1px solid #b6cade;border-radius:8px;display:block;">
+                    <div style="font-size:9px;color:#5f7d9c;margin-top:4px;max-width:280px;word-break:break-all;">${escapeHtml(p.name)}</div>
+                  </div>`;
+                });
+                html += '</div>';
+              }
+              html += '</div>';
+              return html;
+            }).join('');
+          }
+
+          tempDiv.innerHTML = `
+            <h1 style="font-size:22px;color:#1a3b5d;border-bottom:3px solid #2b5f8a;padding-bottom:10px;margin-bottom:16px;">📄 Отчёт по изучению тем</h1>
+            <div style="background:#f4f8fe;border-left:4px solid #2b5f8a;padding:12px 16px;border-radius:6px;margin-bottom:16px;">
+              <p style="margin:4px 0;"><strong>Студент:</strong> ${escapeHtml(d.studentName)}</p>
+              <p style="margin:4px 0;"><strong>Группа:</strong> ${escapeHtml(d.studentGroup)}</p>
+              <p style="margin:4px 0;"><strong>Дата:</strong> ${escapeHtml(d.dateStr)}</p>
+            </div>
+            <h2 style="font-size:14px;color:#264e73;margin:16px 0 8px;">1. Теоретическая часть и интерактивы</h2>
+            <pre style="font-family:Consolas,monospace;font-size:10px;white-space:pre-wrap;word-wrap:break-word;background:#f4f8fe;padding:14px;border:1px solid #d7e2ed;border-radius:8px;line-height:1.55;margin:0;">${escapeHtml(text.split('3. ПРАКТИЧЕСКИЕ ЗАДАНИЯ')[0].trim())}</pre>
+            <h2 style="font-size:14px;color:#264e73;margin:16px 0 8px;">2. Практические задания с фото-подтверждениями</h2>
+            <h3 style="font-size:12px;color:#2b5f8a;margin:12px 0 6px;">Облачные хранилища — отмечено</h3>
+            ${renderTaskHtml(d.cloudDone, true)}
+            <h3 style="font-size:12px;color:#2b5f8a;margin:12px 0 6px;">Цифровая гигиена — отмечено</h3>
+            ${renderTaskHtml(d.secDone, true)}
+          `;
+
+          document.body.appendChild(tempDiv);
+
+          const images = tempDiv.querySelectorAll('img');
+          await Promise.all(Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          }));
+          await new Promise(r => setTimeout(r, 300));
+
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false
+          });
+
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const margin = 8;
+          const contentWidth = pageWidth - margin * 2;
+          const contentHeight = pageHeight - margin * 2;
+
+          const imgWidthMm = contentWidth;
+          const pageCanvasHeight = Math.floor((contentHeight * canvas.width) / imgWidthMm);
+
+          let renderedHeight = 0;
+          let pageIndex = 0;
+
+          while (renderedHeight < canvas.height) {
+            const remainingHeight = canvas.height - renderedHeight;
+            const currentHeight = Math.min(pageCanvasHeight, remainingHeight);
+
+            const pageCanvas = document.createElement('canvas');
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = currentHeight;
+            const ctx = pageCanvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+            ctx.drawImage(canvas, 0, renderedHeight, canvas.width, currentHeight, 0, 0, pageCanvas.width, pageCanvas.height);
+
+            const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.92);
+            const pageImgHeightMm = (currentHeight * imgWidthMm) / canvas.width;
+
+            if (pageIndex > 0) pdf.addPage();
+            pdf.addImage(pageImgData, 'JPEG', margin, margin, imgWidthMm, pageImgHeightMm);
+
+            renderedHeight += currentHeight;
+            pageIndex++;
+          }
+
+          pdf.save(buildFileName('pdf'));
+          document.body.removeChild(tempDiv);
+
+        } catch (err) {
+          console.error('Ошибка генерации PDF:', err);
+          alert('Не удалось создать PDF: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      });
+    }
+
+    console.log('✅ Приложение успешно инициализировано');
+  })();
+});
+</script>
+</body>
+</html>
